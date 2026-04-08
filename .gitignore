@@ -1,0 +1,9 @@
+uploaded_logs
+log_samples
+.env
+
+
+frontend/node_modules/
+
+
+backend/venv/
