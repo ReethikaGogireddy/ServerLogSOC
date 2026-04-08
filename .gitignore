@@ -8,3 +8,5 @@ frontend/.env
 
 
 backend/venv/
+backend/__pycache__/
+backend/uploaded_logs/

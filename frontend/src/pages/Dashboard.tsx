@@ -7,12 +7,18 @@ function Dashboard() {
   const [file, setFile] = useState<File | null>(null);
   const [message, setMessage] = useState("");
 
-    const API = "http://127.0.0.1:5000";
-    const handleUpload = async (e: React.FormEvent) => {
+  const API = "http://127.0.0.1:5000";
+  const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!file) {
       setMessage("Please choose a log file first.");
+      return;
+    }
+
+    const allowed = [".log", ".txt"];
+    if (!allowed.some((ext) => file.name.endsWith(ext))) {
+      setMessage("Only .log or .txt files allowed");
       return;
     }
 
@@ -31,11 +37,15 @@ function Dashboard() {
         setMessage(data.message || "File uploaded successfully.");
         setFile(null);
       } else {
-        setMessage(data.message || `Upload failed with status ${response.status}.`);
+        setMessage(
+          data.message || `Upload failed with status ${response.status}.`,
+        );
       }
     } catch (error) {
       console.error("Upload error:", error);
-      setMessage("Could not connect to backend. Make sure Flask is running on http://127.0.0.1:5000");
+      setMessage(
+        "Could not connect to backend. Make sure Flask is running on http://127.0.0.1:5000",
+      );
     }
   };
 
@@ -72,7 +82,6 @@ function Dashboard() {
         <p>Upload server logs to begin analysis and threat detection.</p>
         <form onSubmit={handleUpload} className="upload-box">
           <p>Drag & drop log files here, or click to browse</p>
-
           <input
             type="file"
             accept=".log,.txt"
@@ -83,15 +92,12 @@ function Dashboard() {
           <label htmlFor="fileInput" className="upload-btn">
             Browse Files
           </label>
-
           &nbsp; &nbsp;
-
           {file && <p>{file.name}</p>}
-
           <button type="submit" className="upload-btn">
             Upload
           </button>
-            {message && <p className="upload-message">{message}</p>}
+          {message && <p className="upload-message">{message}</p>}
         </form>
       </main>
     </div>

@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 from werkzeug.utils import secure_filename
+from parser import parse_uploaded_logs
 
 app = Flask(__name__)
 CORS(app)
@@ -10,6 +11,9 @@ UPLOAD_FOLDER = "uploaded_logs"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
+ALLOWED_EXTENSIONS = {"log", "txt"}
+
+# for health check
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({
@@ -18,7 +22,7 @@ def health():
     }), 200
 
 
-
+# Endpoint to handle file uploads
 @app.route("/upload", methods=["POST"])
 def upload_file():
     if "file" not in request.files:
@@ -30,8 +34,14 @@ def upload_file():
         return jsonify({"message": "Empty filename"}), 400
 
     filename = secure_filename(file.filename) 
-    if not filename.lower().endswith(".log"):
-        filename = filename + ".log"
+  
+    # Check the actual file extension
+    file_ext = filename.rsplit(".", 1)[1].lower() if "." in filename else ""
+     
+    if file_ext not in ALLOWED_EXTENSIONS:
+        return jsonify({
+            "message": "Only .log or .txt files are allowed"
+        }), 400
 
     save_path = os.path.join(UPLOAD_FOLDER, filename)
     
@@ -40,6 +50,16 @@ def upload_file():
         return jsonify({"message": f"{filename} uploaded successfully"}), 200
     except Exception as e:
         return jsonify({"message": f"Upload failed: {str(e)}"}), 500
+
+@app.route("/parse", methods=["GET"])
+def parse_logs():
+    entries = parse_uploaded_logs("uploaded_logs")
+    print(entries[:5])
+    return jsonify({
+        "status": "success",
+        "count": len(entries),
+        "data": entries
+    }), 200
 
 if __name__ == "__main__":
     app.run(debug=True, host="127.0.0.1", port=5000)
