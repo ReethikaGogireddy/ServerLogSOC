@@ -288,13 +288,24 @@ def detect_burst_activity(entries, window_seconds=60, threshold=20):
 
     return alerts
 
-
+# Builds a unified event feed by combining the outputs of various detection functions.
+# The sensitive access alerts are filtered to exclude any that come from IPs already flagged for potential data exfiltration,
+# as those may be part of the same attack pattern and to avoid duplicate alerts.
 def build_event_feed(entries):
+    sensitive = detect_sensitive_access(entries)
+    exfil = detect_data_exfiltration(entries)
+
+    exfil_ips = {e["ip"] for e in exfil if e.get("ip")}
+
+    filtered_sensitive = [
+        e for e in sensitive if e.get("ip") not in exfil_ips
+    ]
     alerts = []
     alerts.extend(detect_404_scanning(entries))
     alerts.extend(detect_429_abuse(entries))
     alerts.extend(detect_burst_activity(entries))
-    alerts.extend(detect_sensitive_access(entries))
+    alerts.extend(filtered_sensitive)
+    alerts.extend(exfil)
 
     return sorted(alerts, key=lambda x: x.get("time") or "")
 
@@ -310,6 +321,8 @@ def classify_attack(event):
         return "Burst Traffic"
     elif "sensitive" in t:
         return "Sensitive Access"
+    elif "exfiltration" in t:
+        return "Data Exfiltration"
     else:
         return "Other"
 
