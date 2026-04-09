@@ -157,6 +157,43 @@ def detect_sensitive_access(entries):
 
     return alerts
 
+# Detects potential data exfiltration by looking for multiple large downloads of sensitive files from the same IP address.
+def detect_data_exfiltration(entries):
+    valid = valid_entries(entries)
+    by_ip = defaultdict(list)
+
+    for e in valid:
+        ip = e.get("ip")
+        if ip:
+            by_ip[ip].append(e)
+
+    alerts = []
+
+    for ip, logs in by_ip.items():
+        sensitive_hits = []
+
+        for e in logs:
+            path = (e.get("path") or "").lower()
+            size = e.get("size") or 0
+
+            if is_suspicious_path(path):
+                sensitive_hits.append(e)
+
+        large_downloads = [e for e in sensitive_hits if (e.get("size") or 0) > 10000]
+
+        if len(large_downloads) >= 3:
+            total_size = sum(e.get("size") or 0 for e in large_downloads)
+
+            alerts.append({
+                "ip": ip,
+                "type": "Data Exfiltration",
+                "severity": "high",
+                "reason": f"{len(large_downloads)} large sensitive downloads, total size {total_size}",
+                "confidence": 0.95
+            })
+
+    return alerts
+
 # Detects potential directory scanning by looking for a high number of 404 Not Found responses from the same IP across multiple unique paths.
 def detect_404_scanning(entries, min_404s=10, min_unique_paths=5):
     logs = valid_entries(entries)
