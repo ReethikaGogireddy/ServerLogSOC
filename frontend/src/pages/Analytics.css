@@ -1,0 +1,271 @@
+.analytics-page {
+  min-height: 100vh;
+  background: #0b1324;
+  color: #d7deea;
+  font-family: Inter, Arial, sans-serif;
+}
+
+.topbar {
+  height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 34px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: #1a2438;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #eef3ff;
+}
+
+.brand p {
+  margin: 4px 0 0;
+  color: #7f8aa3;
+  font-size: 13px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #93a0b5;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.nav-link.active {
+  color: #4f8cff;
+  border-bottom: 2px solid #4f8cff;
+  padding-bottom: 4px;
+}
+
+.analytics-main {
+  padding: 34px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 28px;
+  color: #f3f7ff;
+}
+
+.page-header p {
+  margin: 6px 0 0;
+  color: #7f8aa3;
+  font-size: 16px;
+}
+
+.notice {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  color: #f3f7ff;
+}
+
+.summary-grid {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.summary-card {
+  background: #1a2438;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 22px;
+  min-height: 118px;
+}
+
+.summary-card span {
+  display: block;
+  color: #7f8aa3;
+  font-size: 13px;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+}
+
+.summary-card strong {
+  font-size: 34px;
+  color: #f3f7ff;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.panel {
+  margin-top: 22px;
+  background: #1a2438;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 22px;
+}
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.panel-head h3 {
+  margin: 0;
+  color: #f3f7ff;
+  font-size: 20px;
+}
+
+.panel-head span {
+  color: #66748d;
+  font-size: 13px;
+}
+
+.alert-list {
+  display: grid;
+  gap: 14px;
+}
+
+.alert-item {
+  background: #162038;
+  border-radius: 12px;
+  padding: 16px 18px;
+  border-left: 4px solid #4f8cff;
+}
+
+.alert-item.high {
+  border-left-color: #ff5f5f;
+}
+
+.alert-item.medium {
+  border-left-color: #f6b93b;
+}
+
+.alert-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+}
+
+.alert-top strong {
+  color: #ff7b7b;
+  font-size: 17px;
+}
+
+.alert-top span {
+  color: #f8c44c;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.alert-item p {
+  margin: 8px 0 6px;
+  color: #b8c3d8;
+  font-size: 15px;
+}
+
+.alert-item small {
+  color: #6f7d96;
+  font-size: 13px;
+}
+
+.timeline-panel {
+  margin-top: 22px;
+}
+
+.chart-box {
+  width: 100%;
+}
+
+.timeline-box {
+  margin-top: 8px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1.1fr 1fr;
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.pie-panel,
+.list-panel {
+  min-height: 360px;
+}
+
+.mini-list {
+  display: grid;
+  gap: 14px;
+}
+
+.list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  color: #b8c3d8;
+  font-size: 15px;
+}
+
+.list-row:last-child {
+  border-bottom: none;
+}
+
+.list-row strong {
+  color: #eef3ff;
+  font-weight: 700;
+}
+
+.list-row strong.highlight {
+  color: #ff7b7b;
+}
+
+@media (max-width: 1200px) {
+  .summary-grid,
+  .stats-grid,
+  .bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .topbar {
+    padding: 0 18px;
+    flex-direction: column;
+    justify-content: center;
+    height: auto;
+    gap: 12px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  .analytics-main {
+    padding: 18px;
+  }
+
+  .nav-links {
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

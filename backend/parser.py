@@ -15,6 +15,7 @@ LOG_LINE_REGEX = re.compile(
     r'"(?P<user_agent>[^"]*)"\s*$'
 )
 
+# This regex is designed to capture the method, path, and protocol from the request line.
 REQUEST_REGEX = re.compile(r'^(?P<method>[A-Z]+)\s+(?P<path>\S+)(?:\s+(?P<protocol>HTTP/\d\.\d))?$')
 
 
@@ -31,7 +32,7 @@ def parse_timestamp(ts: str) -> Optional[str]:
     except ValueError:
         return ts
 
-
+# Parses the request line into method, path, and protocol.
 def parse_request(request: str) -> Dict[str, Any]:
     """
     Example request:
@@ -53,7 +54,7 @@ def parse_request(request: str) -> Dict[str, Any]:
         "raw_request": request
     }
 
-
+# Parses a single log line into a structured dictionary. If parsing fails, returns a dictionary with a parse_error flag.
 def parse_log_line(line: str) -> Optional[Dict[str, Any]]:
     line = line.strip()
     if not line:
@@ -94,7 +95,7 @@ def parse_log_line(line: str) -> Optional[Dict[str, Any]]:
         "raw_line": line
     }
 
-
+# Reads a log file and parses each line into a structured dictionary.
 def parse_log_file(file_path: Path) -> List[Dict[str, Any]]:
     entries: List[Dict[str, Any]] = []
 

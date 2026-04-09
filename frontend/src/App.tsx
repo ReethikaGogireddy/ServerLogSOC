@@ -1,6 +1,7 @@
 import { SignedIn, SignIn } from "@clerk/clerk-react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
+import Analytics from "./pages/Analytics";
 import "./App.css";
 
 function App() {
@@ -8,11 +9,12 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          // The user will be redirected to the dashboard after signing in, or if they are already signed in
+          // The user will be redirected to the dashboard after signing in, or
+          if they are already signed in
           <Route
             path="/"
             element={
-             <div className="signin-page">
+              <div className="signin-page">
                 <h1>Server Log SOC</h1>
                 <p>
                   Welcome to the Server Log Security Operations Center (SOC)
@@ -24,13 +26,21 @@ function App() {
               </div>
             }
           />
-
-         // The dashboard route is protected and only accessible to signed-in users
+          // The dashboard route is protected and only accessible to signed-in
+          users
           <Route
             path="/dashboard"
             element={
               <SignedIn>
                 <Dashboard />
+              </SignedIn>
+            }
+          />
+          <Route
+            path="/analytics"
+            element={
+              <SignedIn>
+                <Analytics />
               </SignedIn>
             }
           />

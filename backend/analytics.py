@@ -24,31 +24,35 @@ def parse_time(value):
     except ValueError:
         return None
 
-
+# Returns the most accessed pages by request count. 
+# This can help identify which endpoints are most frequently used and may warrant closer security review.
 def get_most_accessed_pages(entries, n=5):
     logs = valid_entries(entries)
     counts = Counter(e.get("path") for e in logs if e.get("path"))
     return [{"path": p, "count": c} for p, c in counts.most_common(n)]
 
-
+# Returns the least accessed pages by request count. 
+# This can help identify rarely used endpoints that may be overlooked but could be sensitive or vulnerable.
 def get_least_accessed_pages(entries, n=5):
     logs = valid_entries(entries)
     counts = Counter(e.get("path") for e in logs if e.get("path"))
     least = sorted(counts.items(), key=lambda x: (x[1], x[0]))[:n]
     return [{"path": p, "count": c} for p, c in least]
 
-
+# Returns the top N IP addresses by request count. 
+# This can help identify which clients are most active on the server.
 def get_top_ips(entries, n=5):
     logs = valid_entries(entries)
     counts = Counter(e.get("ip") for e in logs if e.get("ip"))
     return [{"ip": ip, "count": c} for ip, c in counts.most_common(n)]
 
-
+# Returns the single most active IP address based on request count.
+# This can help identify potential attackers or heavy users.
 def get_most_active_ip(entries):
     top_ips = get_top_ips(entries, 1)
     return top_ips[0] if top_ips else None
 
-
+# Classifies HTTP status codes into broader categories for a high-level breakdown of allowed vs blocked vs error responses.
 def get_status_breakdown(entries):
     logs = valid_entries(entries)
     counts = Counter()
@@ -69,7 +73,9 @@ def get_status_breakdown(entries):
 
     return dict(counts)
 
-
+# Classifies device type based on user agent string. 
+# This is a heuristic approach and may not be 100% accurate, 
+# but it can provide a general breakdown of desktop vs mobile vs bot traffic.
 def get_device_breakdown(entries):
     logs = valid_entries(entries)
     counts = Counter()
@@ -87,6 +93,9 @@ def get_device_breakdown(entries):
 
     return dict(counts)
 
+# Extracts the top referrer domains from the log entries. 
+# External Referrer tells from which sites users are coming.
+# A high number of referrers from a single domain could indicate a potential source of traffic or an attack vector. 
 
 def get_top_referrers(entries, n=5):
     logs = valid_entries(entries)
@@ -129,7 +138,7 @@ def is_suspicious_path(path):
     p = (path or "").lower()
     return any(s in p for s in SUSPICIOUS_PATHS)
 
-
+# Detects potential sensitive file access by looking for requests to paths that match common sensitive endpoints or file patterns.
 def detect_sensitive_access(entries):
     logs = valid_entries(entries)
     alerts = []
@@ -148,7 +157,7 @@ def detect_sensitive_access(entries):
 
     return alerts
 
-
+# Detects potential directory scanning by looking for a high number of 404 Not Found responses from the same IP across multiple unique paths.
 def detect_404_scanning(entries, min_404s=10, min_unique_paths=5):
     logs = valid_entries(entries)
     by_ip = defaultdict(list)
@@ -184,7 +193,7 @@ def detect_404_scanning(entries, min_404s=10, min_unique_paths=5):
 
     return alerts
 
-
+# Detects potential scraping or brute force activity by looking for a high number of 429 Too Many Requests responses from the same IP.
 def detect_429_abuse(entries, min_429s=5):
     logs = valid_entries(entries)
     by_ip = defaultdict(list)
@@ -209,7 +218,7 @@ def detect_429_abuse(entries, min_429s=5):
 
     return alerts
 
-
+# Detects burst activity from an IP by looking for a high number of requests within a short time window.
 def detect_burst_activity(entries, window_seconds=60, threshold=20):
     logs = valid_entries(entries)
     by_ip = defaultdict(list)
@@ -252,6 +261,34 @@ def build_event_feed(entries):
 
     return sorted(alerts, key=lambda x: x.get("time") or "")
 
+# Classifies an alert event into a broader attack category for distribution analysis.
+def classify_attack(event):
+    t = event.get("type", "").lower()
+
+    if "scanning" in t:
+        return "Scanning"
+    elif "429" in t or "rate" in t or "brute" in t:
+        return "Brute Force / Rate Abuse"
+    elif "burst" in t:
+        return "Burst Traffic"
+    elif "sensitive" in t:
+        return "Sensitive Access"
+    else:
+        return "Other"
+
+# Builds a distribution of attack types based on the generated event feed.
+def get_attack_distribution(entries):
+    events = build_event_feed(entries)
+
+    categories = [classify_attack(e) for e in events]
+
+    counts = Counter(categories)
+
+    return [
+        {"name": k, "value": v}
+        for k, v in counts.items()
+    ]
+
 
 def analyze_logs(entries):
     return {
@@ -264,4 +301,5 @@ def analyze_logs(entries):
         "top_referrers": get_top_referrers(entries),
         "timeline": get_timeline(entries),
         "event_feed": build_event_feed(entries),
+        "attack_distribution": get_attack_distribution(entries)
     }

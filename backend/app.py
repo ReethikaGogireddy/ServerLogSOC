@@ -52,6 +52,7 @@ def upload_file():
     except Exception as e:
         return jsonify({"message": f"Upload failed: {str(e)}"}), 500
 
+# Endpoint to parse uploaded logs and return structured data
 @app.route("/parse", methods=["GET"])
 def parse_logs():
     entries = parse_uploaded_logs("uploaded_logs")
@@ -62,6 +63,7 @@ def parse_logs():
         "data": entries
     }), 200
 
+# Endpoint to analyze parsed logs and return insights
 @app.route("/analyze", methods=["GET"])
 def analyze():
     try:
