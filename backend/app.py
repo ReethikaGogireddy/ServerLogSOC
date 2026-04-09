@@ -3,6 +3,7 @@ from flask_cors import CORS
 import os
 from werkzeug.utils import secure_filename
 from parser import parse_uploaded_logs
+from analytics import analyze_logs
 
 app = Flask(__name__)
 CORS(app)
@@ -60,6 +61,21 @@ def parse_logs():
         "count": len(entries),
         "data": entries
     }), 200
+
+@app.route("/analyze", methods=["GET"])
+def analyze():
+    try:
+        entries = parse_uploaded_logs("uploaded_logs")
+        analysis = analyze_logs(entries)
+        return jsonify({
+            "status": "success",
+            "analysis": analysis
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": f"Analysis failed: {str(e)}"
+        }), 500
 
 if __name__ == "__main__":
     app.run(debug=True, host="127.0.0.1", port=5000)
