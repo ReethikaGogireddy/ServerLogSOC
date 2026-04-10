@@ -8,6 +8,7 @@ from analytics import analyze_logs
 app = Flask(__name__)
 CORS(app)
 
+#creating uploaded_folder if that doesn't exist
 UPLOAD_FOLDER = "uploaded_logs"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 

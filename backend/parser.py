@@ -16,6 +16,8 @@ LOG_LINE_REGEX = re.compile(
 )
 
 # This regex is designed to capture the method, path, and protocol from the request line.
+# It basically checks if the request starts with uppercase letters (method), followed by a space, then a non-space sequence (path), and optionally followed by another space and the protocol version.
+#Example request line: GET /home HTTP/1.1
 REQUEST_REGEX = re.compile(r'^(?P<method>[A-Z]+)\s+(?P<path>\S+)(?:\s+(?P<protocol>HTTP/\d\.\d))?$')
 
 

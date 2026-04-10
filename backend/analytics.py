@@ -1,7 +1,13 @@
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
+import os
+import requests
+from dotenv import load_dotenv
 
+
+load_dotenv()
+VIRUSTOTAL_API_KEY = os.getenv("VIRUSTOTAL_API_KEY")
 
 SUSPICIOUS_PATHS = [
     "/admin", "/login", "/wp-login", "/phpmyadmin",
@@ -116,6 +122,89 @@ def get_top_referrers(entries, n=5):
     counts = Counter(domains)
     return [{"domain": d, "count": c} for d, c in counts.most_common(n)]
 
+
+def check_domain_virustotal(domain):
+    if not domain or not VIRUSTOTAL_API_KEY:
+        return {
+            "domain": domain,
+            "status": "no_api_key",
+            "malicious": 0,
+            "suspicious": 0,
+            "harmless": 0,
+            "undetected": 0,
+        }
+
+    try:
+        url = f"https://www.virustotal.com/api/v3/domains/{domain}"
+        headers = {"x-apikey": VIRUSTOTAL_API_KEY}
+        res = requests.get(url, headers=headers, timeout=3)
+
+        if res.status_code != 200:
+            return {
+                "domain": domain,
+                "status": f"error_{res.status_code}",
+                "malicious": 0,
+                "suspicious": 0,
+                "harmless": 0,
+                "undetected": 0,
+            }
+
+        data = res.json()
+        stats = data["data"]["attributes"]["last_analysis_stats"]
+
+        return {
+            "domain": domain,
+            "status": "ok",
+            "malicious": stats.get("malicious", 0),
+            "suspicious": stats.get("suspicious", 0),
+            "harmless": stats.get("harmless", 0),
+            "undetected": stats.get("undetected", 0),
+        }
+
+    except requests.Timeout:
+        return {
+            "domain": domain,
+            "status": "timeout",
+            "malicious": 0,
+            "suspicious": 0,
+            "harmless": 0,
+            "undetected": 0,
+        }
+    except Exception as e:
+        return {
+            "domain": domain,
+            "status": "failed",
+            "malicious": 0,
+            "suspicious": 0,
+            "harmless": 0,
+            "undetected": 0,
+        }
+
+def enrich_referrers_with_virustotal(top_referrers):
+    """
+    Enrich referrers with VirusTotal data.
+    Skips VirusTotal check if no API key to avoid blocking.
+    Only checks top 5 domains to avoid rate limiting.
+    """
+    if not VIRUSTOTAL_API_KEY:
+        return top_referrers
+    
+    enriched = []
+    
+    # Only check top 5 to avoid rate limiting and timeouts
+    for idx, item in enumerate(top_referrers[:5]):
+        domain = item.get("domain")
+        vt = check_domain_virustotal(domain)
+        
+        enriched.append({
+            **item,
+            "virustotal": vt
+        })
+    
+    # Return rest without VirusTotal data
+    enriched.extend(top_referrers[5:])
+    
+    return enriched
 
 def get_timeline(entries, bucket_minutes=120):
     logs = valid_entries(entries)
@@ -341,7 +430,7 @@ def get_attack_distribution(entries):
 
 
 def analyze_logs(entries):
-    return {
+    result = {
         "most_accessed_pages": get_most_accessed_pages(entries),
         "least_accessed_pages": get_least_accessed_pages(entries),
         "top_ips": get_top_ips(entries),
@@ -353,3 +442,9 @@ def analyze_logs(entries):
         "event_feed": build_event_feed(entries),
         "attack_distribution": get_attack_distribution(entries)
     }
+
+    # Enrich referrers with VirusTotal threat intelligence
+    result["top_referrers"] = enrich_referrers_with_virustotal(result["top_referrers"])
+    print(result["top_referrers"])
+
+    return result
