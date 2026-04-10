@@ -308,7 +308,8 @@ function Analytics() {
                   </ResponsiveContainer>
                 </div>
               </div>
-
+               </section>
+              <section className="bottom-grid">
               <div className="panel list-panel">
                 <div className="panel-head">
                   <h3>Top referrers</h3>
@@ -324,9 +325,7 @@ function Analytics() {
                   ))}
                 </div>
               </div>
-            </section>
-
-            <section className="bottom-grid">
+            
               <div className="panel list-panel">
                 <div className="panel-head">
                   <h3>Top pages</h3>

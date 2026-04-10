@@ -201,7 +201,7 @@
 
 .bottom-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.1fr 1.1fr 1fr;
   gap: 18px;
   margin-top: 22px;
 }
