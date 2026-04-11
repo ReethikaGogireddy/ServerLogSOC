@@ -240,6 +240,40 @@
   color: #ff7b7b;
 }
 
+.threat-malicious {
+  color: #ff4444 !important;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.threat-suspicious {
+  color: #ffaa44 !important;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.threat-badge .referrer-count{
+  display: inline-block;
+  background: rgba(255, 68, 68, 0.2);
+  color: #ff4444;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.threat-suspicious .threat-badge {
+  background: rgba(255, 170, 68, 0.2);
+  color: #ffaa44;
+}
+
 @media (max-width: 1200px) {
   .summary-grid,
   .stats-grid,

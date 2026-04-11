@@ -30,6 +30,19 @@ type EventItem = {
   unique_paths?: number;
 };
 
+type ReferrerItem = {
+  domain: string;
+  count: number;
+  virustotal?: {
+    domain: string;
+    status: string;
+    malicious: number;
+    suspicious: number;
+    harmless: number;
+    undetected: number;
+  };
+};
+
 type AnalyticsData = {
   most_accessed_pages: PageItem[];
   least_accessed_pages: PageItem[];
@@ -37,7 +50,7 @@ type AnalyticsData = {
   most_active_ip: IpItem | null;
   status_breakdown: Record<string, number>;
   device_breakdown: Record<string, number>;
-  top_referrers: { domain: string; count: number }[];
+  top_referrers: ReferrerItem[];
   timeline: { time: string; count: number }[];
   event_feed: EventItem[];
   attack_distribution: { name: string; value: number }[];
@@ -221,33 +234,33 @@ function Analytics() {
                   <span>Allowed vs blocked vs errors</span>
                 </div>
                 <div>
-                <div className="chart-box">
-                  <ResponsiveContainer width="100%" height={280}>
-                    <PieChart>
-                      <Pie
-                        data={statusChartData}
-                        dataKey="value"
-                        nameKey="name"
-                        outerRadius={95}
-                        innerRadius={55}
-                        paddingAngle={3}
-                        label
-                      >
-                        {statusChartData.map((_, index) => (
-                          <Cell
-                            key={index}
-                            fill={COLORS[index % COLORS.length]}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  <div className="chart-box">
+                    <ResponsiveContainer width="100%" height={280}>
+                      <PieChart>
+                        <Pie
+                          data={statusChartData}
+                          dataKey="value"
+                          nameKey="name"
+                          outerRadius={95}
+                          innerRadius={55}
+                          paddingAngle={3}
+                          label
+                        >
+                          {statusChartData.map((_, index) => (
+                            <Cell
+                              key={index}
+                              fill={COLORS[index % COLORS.length]}
+                            />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
               </div>
-              </div>
-            
+
               <div className="panel pie-panel">
                 <div className="panel-head">
                   <h3>Attack distribution</h3>
@@ -267,7 +280,10 @@ function Analytics() {
                         label
                       >
                         {data.attack_distribution.map((_, index) => (
-                          <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                          <Cell
+                            key={index}
+                            fill={COLORS[index % COLORS.length]}
+                          />
                         ))}
                       </Pie>
                       <Tooltip />
@@ -308,8 +324,8 @@ function Analytics() {
                   </ResponsiveContainer>
                 </div>
               </div>
-               </section>
-              <section className="bottom-grid">
+            </section>
+            <section className="bottom-grid">
               <div className="panel list-panel">
                 <div className="panel-head">
                   <h3>Top referrers</h3>
@@ -317,15 +333,50 @@ function Analytics() {
                 </div>
 
                 <div className="mini-list">
-                  {topReferrers.map((item, idx) => (
-                    <div key={idx} className="list-row">
-                      <span>{item.domain}</span>
-                      <strong>{item.count.toLocaleString()}</strong>
-                    </div>
-                  ))}
+                  {topReferrers.map((item, idx) => {
+                    const isMalicious =
+                      item.virustotal &&
+                      (item.virustotal.malicious > 0 ||
+                        item.virustotal.suspicious > 0);
+                    const threatLevel =
+                      item.virustotal?.malicious > 0
+                        ? "malicious"
+                        : "suspicious";
+
+                    return (
+                      <div key={idx} className="list-row">
+                        <span
+                          className={isMalicious ? `threat-${threatLevel}` : ""}
+                        >
+                          {item.domain}
+                          {isMalicious && (
+                            <span className="threat-badge">
+                              ⚠️
+                              {item.virustotal.malicious > 0
+                                ? "Malicious"
+                                : "Suspicious"}
+                            </span>
+                          )}
+                        </span>
+                        <span>
+                          <strong
+                            className={
+                              item.virustotal?.malicious > 0
+                                ? "threat-malicious"
+                                : item.virustotal?.suspicious > 0
+                                  ? "threat-suspicious"
+                                  : ""
+                            }
+                          >
+                            {item.count.toLocaleString()}
+                          </strong>
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            
+
               <div className="panel list-panel">
                 <div className="panel-head">
                   <h3>Top pages</h3>

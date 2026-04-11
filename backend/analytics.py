@@ -186,6 +186,8 @@ def enrich_referrers_with_virustotal(top_referrers):
     Skips VirusTotal check if no API key to avoid blocking.
     Only checks top 5 domains to avoid rate limiting.
     """
+    print("VirusTotal key present:", bool(VIRUSTOTAL_API_KEY), flush=True)
+    print("Top referrers:", top_referrers, flush=True)
     if not VIRUSTOTAL_API_KEY:
         return top_referrers
     
@@ -203,6 +205,7 @@ def enrich_referrers_with_virustotal(top_referrers):
     
     # Return rest without VirusTotal data
     enriched.extend(top_referrers[5:])
+    print(enriched)
     
     return enriched
 
@@ -445,6 +448,6 @@ def analyze_logs(entries):
 
     # Enrich referrers with VirusTotal threat intelligence
     result["top_referrers"] = enrich_referrers_with_virustotal(result["top_referrers"])
-    print(result["top_referrers"])
+    #print(result["top_referrers"])
 
     return result
