@@ -17,6 +17,14 @@ SUSPICIOUS_PATHS = [
 
 BOT_HINTS = ["bot", "spider", "crawler", "python-requests", "scrapy", "curl", "wget"]
 
+SIGNAL_WEIGHTS = {
+    "Directory Scanning": 0.25,
+    "Scraping / Brute Force": 0.20,
+    "Burst Activity": 0.25,
+    "Sensitive File Access": 0.15,
+    "Data Exfiltration": 0.40,
+}
+
 
 def valid_entries(entries):
     return [e for e in entries if isinstance(e, dict) and not e.get("parse_error")]
@@ -244,7 +252,7 @@ def detect_sensitive_access(entries):
                 "type": "Sensitive File Access",
                 "severity": "high",
                 "reason": f"Suspicious path accessed: {path}",
-                "confidence": 0.90
+                "confidence": 0.0
             })
 
     return alerts
@@ -281,7 +289,7 @@ def detect_data_exfiltration(entries):
                 "type": "Data Exfiltration",
                 "severity": "high",
                 "reason": f"{len(large_downloads)} large sensitive downloads, total size {total_size}",
-                "confidence": 0.95
+                "confidence": 0.0
             })
 
     return alerts
@@ -315,7 +323,7 @@ def detect_404_scanning(entries, min_404s=10, min_unique_paths=5):
                 "type": "Directory Scanning",
                 "severity": "high",
                 "reason": f"{len(not_found)} 404 responses across {len(unique_paths)} paths",
-                "confidence": 0.95 if span_seconds is not None and span_seconds <= 300 else 0.85,
+                "confidence": 0.0,
                 "count_404": len(not_found),
                 "unique_paths": len(unique_paths),
             })
@@ -342,7 +350,8 @@ def detect_429_abuse(entries, min_429s=5):
                 "type": "Scraping / Brute Force",
                 "severity": "medium",
                 "reason": f"{len(hits)} requests returned 429 Too Many Requests",
-                "confidence": 0.88
+                "count_429": len(hits),
+                "confidence": 0.0
             })
 
     return alerts
@@ -374,11 +383,58 @@ def detect_burst_activity(entries, window_seconds=60, threshold=20):
                     "type": "Burst Activity",
                     "severity": "medium",
                     "reason": f"{end - start + 1} requests in {window_seconds} seconds",
-                    "confidence": 0.90
+                    "confidence": 0.0
                 })
                 break
 
     return alerts
+
+
+# Computes a confidence score for an IP address based on the types and volume of suspicious signals associated with it.
+# This is Based on the idea that an IP can show multiple indicators of suspicious behavior, and the more signals it has 
+# (especially across different categories), the higher the confidence that it's malicious.
+# I believe this is useful in prioritizing alerts and focusing attention on the most likely threats, 
+# rather than treating all alerts as equally severe.
+def compute_ip_confidence(ip_signals: list) -> float:
+    """
+    ip_signals = list of alert dicts for a single IP from build_event_feed
+    """
+    base_score = 0.0
+    signal_types = {}
+
+    for alert in ip_signals:
+        attack_type = alert.get("type")
+        weight = SIGNAL_WEIGHTS.get(attack_type, 0.10)
+
+        # Volume boost — more hits of same type increases confidence slightly
+        count = alert.get("count_404") or alert.get("count_429") or 1
+        volume_boost = min(0.20, count / 200)
+
+        signal_types[attack_type] = {
+            "weight": weight,
+            "volume_boost": volume_boost,
+        }
+
+        base_score += weight + volume_boost
+
+    # Time compression bonus — if alerts happened within 5 minutes of each other
+    times = [
+        parse_time(a.get("time"))
+        for a in ip_signals
+        if a.get("time")
+    ]
+    if len(times) >= 2:
+        span = (max(times) - min(times)).total_seconds()
+        if span < 300:
+            base_score += 0.15
+
+    # Multi-vector bonus — 3+ different attack types is very suspicious
+    if len(signal_types) >= 3:
+        base_score += 0.10
+    elif len(signal_types) == 2:
+        base_score += 0.05
+
+    return round(min(base_score, 1.0), 2)
 
 # Builds a unified event feed by combining the outputs of various detection functions.
 # The sensitive access alerts are filtered to exclude any that come from IPs already flagged for potential data exfiltration,
@@ -386,6 +442,7 @@ def detect_burst_activity(entries, window_seconds=60, threshold=20):
 def build_event_feed(entries):
     sensitive = detect_sensitive_access(entries)
     exfil = detect_data_exfiltration(entries)
+    exfil_ips = {e["ip"] for e in exfil if e.get("ip")}
 
     exfil_ips = {e["ip"] for e in exfil if e.get("ip")}
 
@@ -398,6 +455,20 @@ def build_event_feed(entries):
     alerts.extend(detect_burst_activity(entries))
     alerts.extend(filtered_sensitive)
     alerts.extend(exfil)
+
+    # Group alerts by IP
+    by_ip = defaultdict(list)
+    for alert in alerts:
+        ip = alert.get("ip")
+        if ip:
+            by_ip[ip].append(alert)
+
+    # Attach dynamic confidence score to each alert
+    for alert in alerts:
+        ip = alert.get("ip")
+        if ip and ip in by_ip:
+            alert["confidence"] = compute_ip_confidence(by_ip[ip])
+        # IPs with no grouping (e.g. sensitive access with no ip) keep original confidence
 
     return sorted(alerts, key=lambda x: x.get("time") or "")
 

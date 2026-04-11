@@ -16,6 +16,8 @@ import {
 } from "recharts";
 import "./Analytics.css";
 
+
+
 type PageItem = { path: string; count: number };
 type IpItem = { ip: string; count: number };
 
@@ -72,7 +74,7 @@ function Analytics() {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:5000/analyze");
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/analyze`);
         const json = await res.json();
 
         if (res.ok && json.status === "success") {
