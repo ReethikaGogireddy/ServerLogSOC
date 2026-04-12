@@ -1,7 +1,6 @@
 # ServerLogSOC
 **ServerLogSOC** is a security log analysis dashboard that enables analysts to upload access logs, detect suspicious activity, and understand incidents through summaries, timelines, and SOC-style insights.
 
----
 
 ## 📦 Tech Stack
 
@@ -9,8 +8,6 @@
 * **Backend:** Flask (Python)
 * **Visualization:** Chart components (Bar, Pie)
 * **Containerization:** Docker, Docker Compose
-
----
 
 ## 📁 Project Structure
 
@@ -43,7 +40,6 @@ Backend/
 docker-compose.yml        # Runs frontend + backend
 ```
 
----
 ## 🚀 Quick Start ( No Setup Required, Only log files are needed to upload)
 
 * **Host URL**: https://serverlogsoc.web.app/ 
@@ -65,7 +61,6 @@ docker compose up --build
 * Frontend: [http://localhost:5173](http://localhost:5173)
 * Backend: [http://localhost:5000](http://localhost:5000)
 
----
 
 ## 🧑‍💻 Usage
 
@@ -77,7 +72,6 @@ docker compose up --build
    * Suspicious activity
    * Visual insights
 
----
 
 ## ⚠️ Common Issue (macOS Port 5000 Conflict)
 
@@ -86,7 +80,6 @@ If port **5000** is in use:
 * Go to: **System Settings → General → AirDrop & Handoff**
 * Turn **AirPlay Receiver OFF**
 
----
 
 ## 🛠️ Manual Setup (Without Docker)
 
@@ -112,8 +105,6 @@ Run:
 python app.py
 ```
 
----
-
 ### Frontend (React)
 
 ```bash
@@ -133,21 +124,17 @@ Run:
 npm run dev
 ```
 
----
-
 ## ✅ You're Ready
 
 * Open: [http://localhost:5173](http://localhost:5173)
 * Upload logs
 * Analyze results in the dashboard
 
----
 
 ## 🔗 Repository
 
 GitHub:
 [https://github.com/ReethikaGogireddy/ServerLogSOC](https://github.com/ReethikaGogireddy/ServerLogSOC)
 
----
 
 
