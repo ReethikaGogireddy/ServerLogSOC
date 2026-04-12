@@ -1,4 +1,4 @@
-from zipfile import Path
+from pathlib import Path
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
