@@ -1,3 +1,4 @@
+from zipfile import Path
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
@@ -44,6 +45,11 @@ def upload_file():
         return jsonify({
             "message": "Only .log or .txt files are allowed"
         }), 400
+    
+    # Clear old files in the upload folder before saving the new one
+    for old_file in Path(UPLOAD_FOLDER).iterdir():
+            if old_file.is_file():
+                old_file.unlink()
 
     save_path = os.path.join(UPLOAD_FOLDER, filename)
     
