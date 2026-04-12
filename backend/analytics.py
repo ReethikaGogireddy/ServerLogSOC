@@ -285,6 +285,7 @@ def detect_data_exfiltration(entries):
             total_size = sum(e.get("size") or 0 for e in large_downloads)
 
             alerts.append({
+                "time": e.get("timestamp"),
                 "ip": ip,
                 "type": "Data Exfiltration",
                 "severity": "high",
@@ -319,6 +320,7 @@ def detect_404_scanning(entries, min_404s=10, min_unique_paths=5):
                 span_seconds = int((max(times) - min(times)).total_seconds())
 
             alerts.append({
+                "time": e.get("timestamp"),
                 "ip": ip,
                 "type": "Directory Scanning",
                 "severity": "high",
@@ -346,6 +348,7 @@ def detect_429_abuse(entries, min_429s=5):
         hits = [e for e in items if e.get("status") == 429]
         if len(hits) >= min_429s:
             alerts.append({
+                "time": e.get("timestamp"),
                 "ip": ip,
                 "type": "Scraping / Brute Force",
                 "severity": "medium",
@@ -379,6 +382,7 @@ def detect_burst_activity(entries, window_seconds=60, threshold=20):
 
             if end - start + 1 >= threshold:
                 alerts.append({
+                    "time": e.get("timestamp"),
                     "ip": ip,
                     "type": "Burst Activity",
                     "severity": "medium",
@@ -470,7 +474,8 @@ def build_event_feed(entries):
             alert["confidence"] = compute_ip_confidence(by_ip[ip])
         # IPs with no grouping (e.g. sensitive access with no ip) keep original confidence
 
-    return sorted(alerts, key=lambda x: x.get("time") or "")
+    # return sorted(alerts, key=lambda x: x.get("time") or "")
+    return sorted(alerts, key=lambda x: x.get("confidence", 0), reverse=True)
 
 # Classifies an alert event into a broader attack category for distribution analysis.
 def classify_attack(event):
