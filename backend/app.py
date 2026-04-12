@@ -70,6 +70,10 @@ def upload_file():
     try:
         # file.save(save_path)
         # return jsonify({"message": f"{filename} uploaded successfully"}), 200
+        blobs = bucket.list_blobs(prefix="uploaded_logs/")
+        for blob in blobs:
+            blob.delete()
+        
         blob = bucket.blob(f"uploaded_logs/{filename}")
         blob.upload_from_file(file.stream, content_type=file.content_type)
         return jsonify({"message": "Uploaded successfully", "filename": filename}), 200
