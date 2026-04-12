@@ -2,13 +2,6 @@
 **ServerLogSOC** is a security log analysis dashboard that enables analysts to upload access logs, detect suspicious activity, and understand incidents through summaries, timelines, and SOC-style insights.
 
 
-## 📦 Tech Stack
-
-* **Frontend:** React (Vite), Clerk (Auth)
-* **Backend:** Flask (Python)
-* **Visualization:** Chart components (Bar, Pie)
-* **Containerization:** Docker, Docker Compose
-
 ## 📁 Project Structure
 
 ```
@@ -16,10 +9,6 @@ Frontend/
 ├── Dockerfile
 ├── clerk-react/           # Clerk authentication setup
 ├── src/
-│   ├── components/
-│   │   ├── BarGraph.tsx
-│   │   ├── PieChart.tsx
-│   │   └── NavBar.tsx
 │   ├── pages/
 │   │   ├── Dashboard.tsx
 │   │   ├── Dashboard.css
@@ -39,12 +28,46 @@ Backend/
 
 docker-compose.yml        # Runs frontend + backend
 ```
-Log Files are from : http://www.secrepo.com/self.logs/ 
-The sample log files are in log_samples folder (one log from each year is taken for testing)
+## 🧠 Anomaly Detection Approach
+
+The system looks for suspicious activity using 5 simple checks:
+
+- **Directory Scanning** — an IP trying many different URLs and getting lots of 404 errors  
+- **Rate Abuse** — an IP hitting rate limits (429 errors) again and again  
+- **Burst Activity** — an IP making too many requests in a short time (60 seconds)  
+- **Sensitive File Access** — attempts to access important paths like `/admin` or `/etc/passwd`  
+- **Data Exfiltration** — large downloads from unusual or risky paths  
+
+---
+
+### 🔢 Confidence Score
+
+Each suspicious IP gets a score based on how risky it looks.
+
+The score increases based on:
+- How many different checks it triggered  
+- How many suspicious requests it made  
+- How quickly the activity happened  
+
+---
+
+### 📊 Example
+
+- One type of suspicious activity → score around **0.28**  
+- Three different types within 5 minutes → score around **0.95**  
+
+Higher score = more likely the IP is malicious.
 
 ## 🚀 Quick Start ( No Setup Required, Only log files are needed to upload)
 
-* **Host URL**: https://serverlogsoc.web.app/ (Live Link Deployed on GCP)
+* **Live Link**: https://serverlogsoc.web.app/ 
+
+## 🔗 Repository
+
+GitHub:
+[https://github.com/ReethikaGogireddy/ServerLogSOC](https://github.com/ReethikaGogireddy/ServerLogSOC)
+
+
 
 ## 🚀 Docker Setup 
 
