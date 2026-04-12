@@ -39,10 +39,12 @@ Backend/
 
 docker-compose.yml        # Runs frontend + backend
 ```
+Log Files are from : http://www.secrepo.com/self.logs/ 
+The sample log files are in log_samples folder (one log from each year is taken for testing)
 
 ## 🚀 Quick Start ( No Setup Required, Only log files are needed to upload)
 
-* **Host URL**: https://serverlogsoc.web.app/ 
+* **Host URL**: https://serverlogsoc.web.app/ (Live Link Deployed on GCP)
 
 ## 🚀 Docker Setup 
 
