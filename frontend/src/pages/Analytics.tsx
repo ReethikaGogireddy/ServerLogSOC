@@ -68,6 +68,7 @@ const COLORS = [
 function Analytics() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [message, setMessage] = useState("Loading analytics...");
+  const [timelineOpen, setTimelineOpen] = useState(false);
 
   useEffect(() => {
     const fetchAnalytics = async () => {
@@ -131,7 +132,7 @@ function Analytics() {
               isActive ? "nav-link active" : "nav-link"
             }
           >
-            Dashboard
+            Upload
           </NavLink>
           <NavLink
             to="/analytics"
@@ -213,6 +214,56 @@ function Analytics() {
                 <h3>Traffic timeline</h3>
                 <span>Volume over time</span>
               </div>
+              <section className="panel">
+                <div
+                  className="panel-head collapsible"
+                  onClick={() => setTimelineOpen(!timelineOpen)}
+                >
+                  <h3>Event Timeline</h3>
+                  <div className="timeline-toggle-right">
+                    <span className="event-count">
+                      {data.event_feed.filter((e) => e.time).length} events
+                    </span>
+                    <span
+                      className={`timeline-chevron ${timelineOpen ? "open" : ""}`}
+                    >
+                      ▼
+                    </span>
+                  </div>
+                </div>
+
+                {timelineOpen && (
+                  <div className="alert-list">
+                    {data.event_feed
+                      .filter((e) => e.time)
+                      .sort((a, b) => a.time!.localeCompare(b.time!))
+                      .map((event, idx) => (
+                        <div
+                          key={idx}
+                          className={`alert-item ${event.severity}`}
+                        >
+                          <div className="alert-top">
+                            <strong>{event.type}</strong>
+                            <span>{Math.round(event.confidence * 100)}%</span>
+                          </div>
+                          <p>{event.reason}</p>
+                          <small>
+                            {event.time
+                              ? new Date(event.time).toLocaleString()
+                              : "No timestamp"}
+                            {event.ip ? ` • ${event.ip}` : ""}
+                          </small>
+                        </div>
+                      ))}
+
+                    {data.event_feed.filter((e) => e.time).length === 0 && (
+                      <p style={{ color: "#7f8aa3" }}>
+                        No timestamped events found.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </section>
 
               <div className="chart-box timeline-box">
                 <ResponsiveContainer width="100%" height={260}>

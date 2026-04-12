@@ -63,7 +63,7 @@ function Dashboard() {
               isActive ? "nav-link active" : "nav-link"
             }
           >
-            Dashboard
+          Upload
           </NavLink>
           <NavLink
             to="/analytics"
