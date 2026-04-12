@@ -16,8 +16,6 @@ import {
 } from "recharts";
 import "./Analytics.css";
 
-
-
 type PageItem = { path: string; count: number };
 type IpItem = { ip: string; count: number };
 
@@ -341,7 +339,7 @@ function Analytics() {
                       (item.virustotal.malicious > 0 ||
                         item.virustotal.suspicious > 0);
                     const threatLevel =
-                      item.virustotal?.malicious > 0
+                      (item.virustotal?.malicious ?? 0) > 0
                         ? "malicious"
                         : "suspicious";
 
@@ -354,7 +352,7 @@ function Analytics() {
                           {isMalicious && (
                             <span className="threat-badge">
                               ⚠️
-                              {item.virustotal.malicious > 0
+                              {(item.virustotal?.malicious ?? 0) > 0
                                 ? "Malicious"
                                 : "Suspicious"}
                             </span>
@@ -363,9 +361,9 @@ function Analytics() {
                         <span>
                           <strong
                             className={
-                              item.virustotal?.malicious > 0
+                              (item.virustotal?.malicious ?? 0) > 0
                                 ? "threat-malicious"
-                                : item.virustotal?.suspicious > 0
+                                : (item.virustotal?.suspicious ?? 0) > 0
                                   ? "threat-suspicious"
                                   : ""
                             }

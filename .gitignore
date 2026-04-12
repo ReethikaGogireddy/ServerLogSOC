@@ -10,3 +10,4 @@ backend/uploaded_logs/
 backend/.env
 
 .env
+.DS_Store

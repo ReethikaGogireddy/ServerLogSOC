@@ -114,20 +114,35 @@ def parse_log_file(file_path: Path) -> List[Dict[str, Any]]:
     return entries
 
 
-def parse_uploaded_logs(folder_path: str = "uploaded_logs") -> List[Dict[str, Any]]:
-    """
-    Reads every file in uploaded_logs/ and parses them into structured rows.
-    """
-    folder = Path(folder_path)
-    if not folder.exists():
-        raise FileNotFoundError(f"Folder not found: {folder.resolve()}")
+# def parse_uploaded_logs(folder_path: str = "uploaded_logs") -> List[Dict[str, Any]]:
+#     """
+#     Reads every file in uploaded_logs/ and parses them into structured rows.
+#     """
+#     folder = Path(folder_path)
+#     if not folder.exists():
+#         raise FileNotFoundError(f"Folder not found: {folder.resolve()}")
 
+#     all_entries: List[Dict[str, Any]] = []
+
+#     for file_path in sorted(folder.iterdir()):
+#         if file_path.is_file():
+#             all_entries.extend(parse_log_file(file_path))
+    
+#     print(f"Parsed {len(all_entries)} log entries from {folder_path}")
+
+#     return all_entries
+
+def parse_uploaded_logs_from_contents(log_contents: list[str]) -> List[Dict[str, Any]]:
     all_entries: List[Dict[str, Any]] = []
 
-    for file_path in sorted(folder.iterdir()):
-        if file_path.is_file():
-            all_entries.extend(parse_log_file(file_path))
-    
-    print(f"Parsed {len(all_entries)} log entries from {folder_path}")
+    for idx, content in enumerate(log_contents):
+        for line_number, line in enumerate(content.splitlines(), start=1):
+            parsed = parse_log_line(line)
+            if parsed is None:
+                continue
+
+            parsed["source_file"] = f"uploaded_blob_{idx}"
+            parsed["line_number"] = line_number
+            all_entries.append(parsed)
 
     return all_entries

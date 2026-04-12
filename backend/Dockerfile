@@ -7,13 +7,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies from repo root
-COPY backend/requirements.txt /app/requirements.txt
+# Install Python dependencies
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy backend source
-COPY backend/ /app/
+COPY . .
 
-EXPOSE 5000
+ENV PORT=8080
 
-CMD ["python", "app.py"]
+CMD ["sh", "-c", "python app.py"]
