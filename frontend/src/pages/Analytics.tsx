@@ -47,11 +47,12 @@ type AnalyticsData = {
   most_accessed_pages: PageItem[];
   least_accessed_pages: PageItem[];
   top_ips: IpItem[];
-  unique_ips: IpItem[];
+  unique_ip_count: number;
   most_active_ip: IpItem | null;
   status_breakdown: Record<string, number>;
   device_breakdown: Record<string, number>;
   top_referrers: ReferrerItem[];
+  unique_referrer_count: number;
   timeline: { time: string; count: number }[];
   event_feed: EventItem[];
   attack_distribution: { name: string; value: number }[];
@@ -167,7 +168,7 @@ function Analytics() {
 
               <div className="summary-card">
                 <span>UNIQUE IPS</span>
-                <strong>{data.unique_ips.length}</strong>
+                <strong>{data.unique_ip_count}</strong>
               </div>
 
               <div className="summary-card">
@@ -176,8 +177,8 @@ function Analytics() {
               </div>
 
               <div className="summary-card">
-                <span>TOP REFERRERS</span>
-                <strong>{data.top_referrers.length}</strong>
+                <span>UNIQUE REFERRER DOMAINS</span>
+                <strong>{data.unique_referrer_count}</strong>
               </div>
             </section>
 

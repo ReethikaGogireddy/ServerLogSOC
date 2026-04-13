@@ -60,10 +60,6 @@ def get_top_ips(entries, n=5):
     counts = Counter(e.get("ip") for e in logs if e.get("ip"))
     return [{"ip": ip, "count": c} for ip, c in counts.most_common(n)]
 
-def get_unique_ip_count(entries):
-    logs = valid_entries(entries)
-    unique_ips = set(e.get("ip") for e in logs if e.get("ip"))
-    return len(unique_ips)
 
 # Returns the single most active IP address based on request count.
 # This can help identify potential attackers or heavy users.
@@ -135,6 +131,21 @@ def get_top_referrers(entries, n=5):
     counts = Counter(domains)
     return [{"domain": d, "count": c} for d, c in counts.most_common(n)]
 
+# ADD this new function
+def get_unique_referrer_count(entries):
+    logs = valid_entries(entries)
+    domains = set()
+    for e in logs:
+        ref = e.get("referrer")
+        if not ref or ref == "-":
+            continue
+        try:
+            parsed = urlparse(ref)
+            if parsed.netloc:
+                domains.add(parsed.netloc.lower())
+        except Exception:
+            pass
+    return len(domains)
 
 def check_domain_virustotal(domain):
     if not domain or not VIRUSTOTAL_API_KEY:
@@ -518,11 +529,12 @@ def analyze_logs(entries):
         "most_accessed_pages": get_most_accessed_pages(entries),
         "least_accessed_pages": get_least_accessed_pages(entries),
         "top_ips": get_top_ips(entries),
-        "unique_ips": get_unique_ip_count(entries),
+        "unique_ip_count": len(set(e.get("ip") for e in valid_entries(entries) if e.get("ip"))),
         "most_active_ip": get_most_active_ip(entries),
         "status_breakdown": get_status_breakdown(entries),
         "device_breakdown": get_device_breakdown(entries),
         "top_referrers": get_top_referrers(entries),
+        "unique_referrer_count": get_unique_referrer_count(entries),
         "timeline": get_timeline(entries),
         "event_feed": build_event_feed(entries),
         "attack_distribution": get_attack_distribution(entries)
