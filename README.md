@@ -41,7 +41,7 @@ docker-compose.yml        # Runs frontend + backend
 ```
 
 
-## Anomaly Detection Approach
+## Anomaly Detection Approach (Rule Based)
 
 The system looks for suspicious activity using 5 simple checks:
 
