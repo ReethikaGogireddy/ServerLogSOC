@@ -7,6 +7,7 @@
 - [Anomaly Detection Approach](#anomaly-detection-approach)
 - [Confidence Score](#confidence-score)
 - [Quick Start](#quick-start)
+- [API keys](#api-keys)
 - [Run with Docker](#run-with-docker)
 - [Run Without Docker](#run-without-docker)
 - [Usage](#usage)
