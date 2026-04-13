@@ -60,6 +60,11 @@ def get_top_ips(entries, n=5):
     counts = Counter(e.get("ip") for e in logs if e.get("ip"))
     return [{"ip": ip, "count": c} for ip, c in counts.most_common(n)]
 
+def unique_ip_count(entries):
+    logs = valid_entries(entries)
+    unique_ips = set(e.get("ip") for e in logs if e.get("ip"))
+    return len(unique_ips)
+
 # Returns the single most active IP address based on request count.
 # This can help identify potential attackers or heavy users.
 def get_most_active_ip(entries):
@@ -513,6 +518,7 @@ def analyze_logs(entries):
         "most_accessed_pages": get_most_accessed_pages(entries),
         "least_accessed_pages": get_least_accessed_pages(entries),
         "top_ips": get_top_ips(entries),
+        "unique_ip_count": len(set(e.get("ip") for e in valid_entries(entries) if e.get("ip"))),
         "most_active_ip": get_most_active_ip(entries),
         "status_breakdown": get_status_breakdown(entries),
         "device_breakdown": get_device_breakdown(entries),
