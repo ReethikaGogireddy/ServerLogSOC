@@ -47,6 +47,7 @@ type AnalyticsData = {
   most_accessed_pages: PageItem[];
   least_accessed_pages: PageItem[];
   top_ips: IpItem[];
+  unique_ips: IpItem[];
   most_active_ip: IpItem | null;
   status_breakdown: Record<string, number>;
   device_breakdown: Record<string, number>;
@@ -166,7 +167,7 @@ function Analytics() {
 
               <div className="summary-card">
                 <span>UNIQUE IPS</span>
-                <strong>{data.top_ips.length}</strong>
+                <strong>{data.unique_ips.length}</strong>
               </div>
 
               <div className="summary-card">
