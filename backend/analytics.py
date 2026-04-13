@@ -136,6 +136,21 @@ def get_top_referrers(entries, n=5):
     return [{"domain": d, "count": c} for d, c in counts.most_common(n)]
 
 
+def get_unique_referrer_count(entries):
+    logs = valid_entries(entries)
+    domains = set()
+    for e in logs:
+        ref = e.get("referrer")
+        if not ref or ref == "-":
+            continue
+        try:
+            parsed = urlparse(ref)
+            if parsed.netloc:
+                domains.add(parsed.netloc.lower())
+        except Exception:
+            pass
+    return len(domains)
+
 def check_domain_virustotal(domain):
     if not domain or not VIRUSTOTAL_API_KEY:
         return {
@@ -523,6 +538,7 @@ def analyze_logs(entries):
         "status_breakdown": get_status_breakdown(entries),
         "device_breakdown": get_device_breakdown(entries),
         "top_referrers": get_top_referrers(entries),
+        "unique_referrer_count": get_unique_referrer_count(entries),
         "timeline": get_timeline(entries),
         "event_feed": build_event_feed(entries),
         "attack_distribution": get_attack_distribution(entries)

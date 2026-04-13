@@ -52,6 +52,7 @@ type AnalyticsData = {
   status_breakdown: Record<string, number>;
   device_breakdown: Record<string, number>;
   top_referrers: ReferrerItem[];
+  unique_referrer_count: number;
   timeline: { time: string; count: number }[];
   event_feed: EventItem[];
   attack_distribution: { name: string; value: number }[];
@@ -176,8 +177,8 @@ function Analytics() {
               </div>
 
               <div className="summary-card">
-                <span>TOP REFERRERS</span>
-                <strong>{data.top_referrers.length}</strong>
+                <span>UNIQUE REFERRER DOMAINS</span>
+                <strong>{data.unique_referrer_count}</strong>
               </div>
             </section>
 
@@ -270,9 +271,28 @@ function Analytics() {
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={data.timeline}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="time" hide />
+                    <XAxis
+                      dataKey="time"
+                      tickFormatter={(t) =>
+                        new Date(t).toLocaleString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                        })
+                      }
+                      tick={{ fill: "#7f8aa3", fontSize: 11 }}
+                    />
                     <YAxis />
-                    <Tooltip />
+                      <Tooltip
+                      labelFormatter={(t) =>
+                        new Date(t).toLocaleString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      }
+                    />
                     <Bar dataKey="count" fill="#4f8cff" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
@@ -282,8 +302,8 @@ function Analytics() {
             <section className="stats-grid">
               <div className="panel pie-panel">
                 <div className="panel-head">
-                  <h3>Status breakdown</h3>
-                  <span>Allowed vs blocked vs errors</span>
+                  <h3>HTTP Response Status breakdown</h3>
+                  <span>Allowed vs blocked vs Others </span>
                 </div>
                 <div>
                   <div className="chart-box">
