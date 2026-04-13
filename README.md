@@ -73,7 +73,11 @@ Higher score = more likely the IP is malicious.
 * **Live Link**: https://serverlogsoc.web.app/  (Deployed on GCP)
 ( ‼️ ⚠️ if not using provided sample logs then after downloading it, extract and rename it to .log to .txt.)
 
-
+## API keys
+> Get your keys:
+> - **Clerk**: https://clerk.com → Create app → API Keys → Publishable Key
+> - **VirusTotal**: https://virustotal.com → Sign up → Profile → API Key
+> - VirusTotal is optional — all features work without it except referrer threat analysis
 
 ## Run with Docker
 
@@ -83,61 +87,60 @@ Higher score = more likely the IP is malicious.
    cd ServerLogSOC
 ```
 
-2. Set up backend keys:
+2. Set up backend keys and frontend keys:  Refer .env.example or fill it and rename to .env
 ```bash
-   # create backend/.env
-   echo "VIRUSTOTAL_API_KEY=your_key_here" > backend/.env
+   # .env
+   echo "VIRUSTOTAL_API_KEY=your_key_here" > .env
+   echo "VITE_CLERK_PUBLISHABLE_KEY=your_key_here" > .env
+   echo "VITE_API_URL=http://localhost:5000" >> .env
 ```
 
-3. Set up frontend keys:
-```bash
-   # create frontend/.env
-   echo "VITE_CLERK_PUBLISHABLE_KEY=your_key_here" > frontend/.env
-   echo "VITE_API_URL=http://localhost:5000" >> frontend/.env
-```
-
-4. Run:
+3. Run:
 ```bash
    docker compose up --build
 ```
 
-5. Open [http://localhost:5173](http://localhost:5173)
+4. Open [http://localhost:5173](http://localhost:5173)
 
 
 ## Run Without Docker
 
-### Backend
+1. Install Backend Dependencies
 ```bash
 cd backend
 python -m venv venv
 source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
-# create backend/.env
-echo "VIRUSTOTAL_API_KEY=your_key_here" > .env
-
-python app.py
 ```
 
-### Frontend
+2. Install Frontend Dependencies
 ```bash
 cd frontend
 npm install
 
-# create frontend/.env
-echo "VITE_CLERK_PUBLISHABLE_KEY=your_key_here" > .env
-echo "VITE_API_URL=http://localhost:5000" >> .env
+```
 
+3. Set up backend keys and frontend  API keys: (from project root ) Refer .env.example or fill it and rename to .env
+```bash
+   echo "VIRUSTOTAL_API_KEY=your_key_here" > .env
+   echo "VITE_CLERK_PUBLISHABLE_KEY=your_key_here" > .env
+   echo "VITE_API_URL=http://localhost:5000" >> .env
+```
+
+4. Run Frontennd and Backend server
+```bash
+cd backend
+python app.py 
+#python3 app.py   # for mac
+```
+
+```bash
+cd frontend
 npm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173)
-
-
-> Get your keys:
-> - **Clerk**: https://clerk.com → Create app → API Keys → Publishable Key
-> - **VirusTotal**: https://virustotal.com → Sign up → Profile → API Key
-> - VirusTotal is optional — all features work without it except referrer threat analysis
 
 
 ### Access
@@ -216,7 +219,6 @@ Prioritizes threats based on severity and behavior patterns.
 ## Common Issue (macOS Port 5000 Conflict)
 
 If port **5000** is in use:
-
 * Go to: **System Settings → General → AirDrop & Handoff**
 * Turn **AirPlay Receiver OFF**
 
