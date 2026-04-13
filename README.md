@@ -3,15 +3,15 @@
 
 ## Table contents
 
-- [ Project Structure](#-project-structure)
-- [ Anomaly Detection Approach](#-anomaly-detection-approach)
-- [ Confidence Score](#-confidence-score)
-- [ Quick Start](#-quick-start)
-- [Run with Docker](#-run-with-docker)
-- [ Run Without Docker](#️-run-without-docker)
-- [ Usage](#-usage)
-- [ Core Functionality ](#core-functionality)
-- [ Common Issue (macOS Port 5000 Conflict)](#️-common-issue-macos-port-5000-conflict)
+- [Project Structure](#-project-structure)
+- [Anomaly Detection Approach](#anomaly-detection-approach)
+- [Confidence Score](#confidence-score)
+- [Quick Start](#quick-start)
+- [Run with Docker](#run-with-docker)
+- [Run Without Docker](#run-without-docker)
+- [Usage](#usage)
+- [Core Functionality](#core-functionality)
+- [Common Issue (macOS Port 5000 Conflict)](#common-issue-macos-port-5000-conflict)
 
 ## 📁 Project Structure
 
