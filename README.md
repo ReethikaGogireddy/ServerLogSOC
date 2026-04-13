@@ -7,11 +7,10 @@
 - [ Anomaly Detection Approach](#-anomaly-detection-approach)
 - [ Confidence Score](#-confidence-score)
 - [ Quick Start](#-quick-start)
-- [ Repository](#-repository)
 - [Run with Docker](#-run-with-docker)
 - [ Run Without Docker](#️-run-without-docker)
 - [ Usage](#-usage)
-- [ Code In-Detail ](#code-in-detail)
+- [ Core Functionality ](#core-functionality)
 - [ Common Issue (macOS Port 5000 Conflict)](#️-common-issue-macos-port-5000-conflict)
 
 ## 📁 Project Structure
@@ -36,7 +35,7 @@ Backend/
 ├── analytics.py          # Insight generation
 ├── app.py                # Flask API
 └── requirements.txt
-logs_samples/            # Logs are from: http://www.secrepo.com/self.logs/ ( ‼️ ⚠️ if not using provided sample logs then after downloading it extract and rename it to .log to .txt.)
+logs_samples/            # Logs are from: http://www.secrepo.com/self.logs/ ( ‼️ ⚠️ if not using provided sample logs then after downloading it, extract and rename it to .log to .txt.)
 
 docker-compose.yml        # Runs frontend + backend
 ```
@@ -58,9 +57,9 @@ The system looks for suspicious activity using 5 simple checks:
 Each suspicious IP gets a score based on how risky it looks.
 
 The score increases based on:
-- How many different checks it triggered  
-- How many suspicious requests it made  
-- How quickly the activity happened  
+- How many different checks it triggered. 
+- How many suspicious requests it made. 
+- How quickly the activity happened.  
 
 ### Example
 
@@ -71,13 +70,9 @@ Higher score = more likely the IP is malicious.
 
 ## Quick Start
 
-* **Live Link**: https://serverlogsoc.web.app/ 
-( ‼️ ⚠️ if not using provided sample logs then after downloading it extract and rename it to .log to .txt.)
+* **Live Link**: https://serverlogsoc.web.app/  (Deployed on GCP)
+( ‼️ ⚠️ if not using provided sample logs then after downloading it, extract and rename it to .log to .txt.)
 
-##  Repository
-
-GitHub:
-[https://github.com/ReethikaGogireddy/ServerLogSOC](https://github.com/ReethikaGogireddy/ServerLogSOC)
 
 
 ## Run with Docker
@@ -162,7 +157,6 @@ Transforms raw server logs into structured, analyzable data.
 - **`parse_log_file`** – Processes entire log files line-by-line.
 - **`parse_uploaded_logs`** – Aggregates and parses all uploaded logs.
 
----
 
 ###  Traffic Analytics
 Generates insights into usage patterns and system behavior.
@@ -174,7 +168,6 @@ Generates insights into usage patterns and system behavior.
 - **`get_top_referrers`** – Tracks incoming traffic sources.  
 - **`get_timeline`** – Visualizes request volume over time.
 
----
 
 ### Threat Detection Engine
 Detects suspicious activity using rule-based heuristics.
@@ -185,7 +178,6 @@ Detects suspicious activity using rule-based heuristics.
 - **`detect_sensitive_access`** – Flags access to sensitive endpoints.  
 - **`detect_data_exfiltration`** – Detects large suspicious data transfers.  
 
----
 
 ### Risk Scoring & Intelligence
 Prioritizes threats based on severity and behavior patterns.
@@ -196,12 +188,12 @@ Prioritizes threats based on severity and behavior patterns.
 - **`get_attack_distribution`** – Summarizes attack patterns for visualization.  
 - **`enrich_referrers_with_virustotal`** – Adds external threat intelligence. 
 
----
+
 
 ### End-to-End Analysis
 - **`analyze_logs`** – Runs full pipeline (parsing → analytics → detection → scoring) and returns dashboard-ready insights . 
 
----
+
 
 ### API Endpoints
 - **`/upload`** – Upload and store log files  
