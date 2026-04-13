@@ -518,6 +518,7 @@ def analyze_logs(entries):
         "most_accessed_pages": get_most_accessed_pages(entries),
         "least_accessed_pages": get_least_accessed_pages(entries),
         "top_ips": get_top_ips(entries),
+        "unique_ips": get_unique_ip_count(entries),
         "most_active_ip": get_most_active_ip(entries),
         "status_breakdown": get_status_breakdown(entries),
         "device_breakdown": get_device_breakdown(entries),
